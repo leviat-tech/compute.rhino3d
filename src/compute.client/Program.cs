@@ -36,21 +36,17 @@ namespace computegen
             {
                 if (cl.Value.Methods.Count == 0)
                     continue;
-                sb.AppendLine(cl.Key);
-                foreach (var m in cl.Value.Methods)
-                    sb.AppendLine($"  {m.Item1.Identifier}");
+                sb.Append("  * [").Append(cl.Key).Append("](").Append("https://developer.rhino3d.com/api/RhinoCommon/html/T_").Append(cl.Key.Replace(".", "_")).Append(".htm)\n");
             }
-            System.IO.File.WriteAllText("compute.txt", sb.ToString());
+            System.IO.File.WriteAllText("compute.md", sb.ToString());
             sb = new StringBuilder();
             foreach (var cl in ClassBuilder.AllClasses)
             {
                 if (cl.Value.NonComputeMethods.Count == 0)
                     continue;
-                sb.AppendLine(cl.Key);
-                foreach (var m in cl.Value.NonComputeMethods)
-                    sb.AppendLine($"  {m.Item1.Identifier}");
+                sb.Append("  * [").Append(cl.Key).Append("](").Append("https://developer.rhino3d.com/api/RhinoCommon/html/T_").Append(cl.Key.Replace(".", "_")).Append(".htm)\n");
             }
-            System.IO.File.WriteAllText("rhino3dm.txt", sb.ToString());
+            System.IO.File.WriteAllText("rhino3dm.md", sb.ToString());
         }
 
     }
