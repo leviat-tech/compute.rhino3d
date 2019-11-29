@@ -7,7 +7,8 @@ namespace computegen
     {
         static void Main(string[] args)
         {
-            const string rhinocommonPath = @"C:\dev\github\mcneel\rhino\src4\DotNetSDK\rhinocommon\dotnet";
+            //const string rhinocommonPath = @"C:\dev\github\mcneel\rhino\src4\DotNetSDK\rhinocommon\dotnet";
+            const string rhinocommonPath = @"/Users/will/dev/github/mcneel/rhino3dm/src/dotnet";
             Console.WriteLine("[BEGIN PARSE]");
             Console.ForegroundColor = ConsoleColor.DarkGreen;
             ClassBuilder.BuildClassDictionary(rhinocommonPath);
@@ -29,7 +30,6 @@ namespace computegen
             var classes = ClassBuilder.FilteredList(ClassBuilder.AllClasses, filter);
 
             // Javascript
-            Console.WriteLine("Writing javascript client");
             var js = new JavascriptClient();
             string javascriptPath = "compute.rhino3d.js";
             if( di!=null)
@@ -38,6 +38,7 @@ namespace computegen
                 if (Directory.Exists(dir))
                     javascriptPath = Path.Combine(dir, javascriptPath);
             }
+            Console.WriteLine($"Writing javascript client → {javascriptPath}");
             js.Write(ClassBuilder.AllClasses, javascriptPath, filter);
             DirectoryInfo jsdocDirectory = new DirectoryInfo("docs\\javascript");
             if( di!=null )
@@ -46,7 +47,7 @@ namespace computegen
                 if (Directory.Exists(dir))
                     jsdocDirectory = new DirectoryInfo(dir);
             }
-            Console.WriteLine("Writing javascript docs");
+            Console.WriteLine($"Writing javascript docs → {jsdocDirectory}");
             RstClient.WriteJavascriptDocs(classes, jsdocDirectory);
 
             // Python
