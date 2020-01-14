@@ -21,7 +21,7 @@ RUN setx path "%path%;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\do
 
 # install rhino (with “-package -quiet” args)
 # NOTE: edit this if you use a different version of rhino!
-ADD https://files.mcneel.com/dujour/exe/20190917/rhino_en-us_7.0.19260.11525.exe rhino_installer.exe
+ADD http://files.mcneel.com/dujour/exe/20200107/rhino_en-us_7.0.20007.12535.exe rhino_installer.exe
 RUN powershell -Command " `
     Start-Process .\rhino_installer.exe -ArgumentList '-package', '-quiet' -NoNewWindow -Wait; `
     Remove-Item .\rhino_installer.exe"
