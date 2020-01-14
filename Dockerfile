@@ -29,9 +29,9 @@ RUN powershell -Command " `
 # setup cloudzoo auth
 # NOTE: switch on CloudZooPlainText and copy 55500d41-3a41-4474-99b3-684032a4f4df.lic,
 #       cloudzoo.json and settings-Scheme__Default.xml to the working dir
-COPY ["55500d41-3a41-4474-99b3-684032a4f4df.lic", "C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["cloudzoo.json", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["settings-Scheme__Default.xml", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings/"]
+COPY ["C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses/55500d41-3a41-4474-99b3-684032a4f4df.lic", "C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
+COPY ["C:/Users/mkarimi/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses/cloudzoo.json", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
+COPY ["C:/Users/mkarimi/AppData/Roaming/McNeel/Rhinoceros/7.0/settings/settings-Scheme__Default.xml", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings/"]
 
 # compile compute
 COPY src src
