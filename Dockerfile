@@ -98,13 +98,6 @@ RUN powershell -Command " `
     Start-Process .\rhino_installer.exe -ArgumentList '-package', '-quiet' -NoNewWindow -Wait; `
     Remove-Item .\rhino_installer.exe"
 
-# setup cloudzoo auth
-# NOTE: switch on CloudZooPlainText and copy 55500d41-3a41-4474-99b3-684032a4f4df.lic,
-#       cloudzoo.json and settings-Scheme__Default.xml to the working dir
-COPY ["55500d41-3a41-4474-99b3-684032a4f4df.lic", "C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["cloudzoo.json", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["settings-Scheme__Default.xml", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings/"]
-
 # compile compute
 COPY src src
 RUN powershell -Command "MSBuild.exe .\src\compute.sln /t:build /restore /p:Configuration=Release "
@@ -112,4 +105,4 @@ EXPOSE 80
 
 CMD .\src\bin\Release\compute.frontend.exe
 
-#buid with >docker build --isolation=process .  -t rhino-compute && docker run -it rhino-compute:latest powershell 
+#buid with >docker build --isolation=process .  -t rhino-compute && docker run -it rhino-compute:latest powershell
