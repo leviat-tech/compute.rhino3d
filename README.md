@@ -29,13 +29,13 @@ Rhino Download (always get the latest version of Rhino WIP):
 https://files.mcneel.com/dujour/exe/20190917/rhino_en-us_7.0.19260.11525.exe
 
 # Building the Image
-`docker build --isolation=process .  -t rhino-compute`
+`docker build --isolation=process --build-arg RH_RELEASE_DATE=20200114 --build-arg RH_BUILD=7.0.20014.11185 . -t rhino-compute`
 
 # Running Image
 Mount the license files and run the image:
+
 `docker run --mount source=license,target="C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses" --mount source=cloudzoo,target="C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses" --mount source=settings,target="C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings" -p 8000:80 rhino-compute:latest
 `
 
 # Debugging Image
 `docker run -it rhino-compute:latest powershell`
-

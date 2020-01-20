@@ -15,7 +15,9 @@ SHELL ["powershell", "-Command"]
 
 # install rhino (with “-package -quiet” args)
 # NOTE: edit this if you use a different version of rhino!
-ADD http://files.mcneel.com/dujour/exe/20200114/rhino_en-us_7.0.20014.11185.exe rhino_installer.exe
+ARG RH_RELEASE_DATE=20200114
+ARG RH_BUILD=7.0.20014.11185
+ADD http://files.mcneel.com/dujour/exe/${RH_RELEASE_DATE}/rhino_en-us_${RH_BUILD}.exe rhino_installer.exe
 RUN Start-Process .\rhino_installer.exe -ArgumentList '-package', '-quiet' -NoNewWindow -Wait
 RUN Remove-Item .\rhino_installer.exe
 
