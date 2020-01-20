@@ -2,6 +2,8 @@
 
 # NOTE: use 'process' isolation to build image (otherwise rhino fails to install)
 
+ARG WIN_BUILD=1903
+
 ### builder image
 FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 as builder
 
@@ -10,7 +12,7 @@ COPY src/ ./src/
 RUN msbuild ./src/compute.sln /t:build /restore /p:Configuration=Release
 
 ### main image
-FROM mcr.microsoft.com/windows:1903
+FROM mcr.microsoft.com/windows:$WIN_BUILD
 SHELL ["powershell", "-Command"]
 
 # install rhino (with “-package -quiet” args)

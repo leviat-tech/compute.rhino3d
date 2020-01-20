@@ -29,7 +29,7 @@ Rhino Download (always get the latest version of Rhino WIP):
 https://files.mcneel.com/dujour/exe/20190917/rhino_en-us_7.0.19260.11525.exe
 
 # Building the Image
-`docker build --isolation=process --build-arg RH_RELEASE_DATE=20200114 --build-arg RH_BUILD=7.0.20014.11185 . -t rhino-compute`
+`docker build --isolation=process --build-arg WIN_BUILD=1903 --build-arg RH_RELEASE_DATE=20200114 --build-arg RH_BUILD=7.0.20014.11185 . -t rhino-compute`
 
 # Running Image
 Mount the license files and run the image:
