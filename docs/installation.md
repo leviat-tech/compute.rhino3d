@@ -90,6 +90,8 @@ You can now create your machine image.
 1. Open `src\compute.sln` in Visual Studio 2017 (or later) and compile as `Debug`.
 1. In _Solution Explorer_, right-click _Solution 'compute'_, then click _Properties_.
 1. In the _Startup Project_ tab, select _Multiple Startup Projects_, then set both `compute.frontend` and `compute.geometry` to _Start_.
+1. If you have previously assigned `urlacl` ports you need to delete them `netsh http delete urlacl url="http://+:8081/"`.
+1. Add breakpoint in `GeometryEnpoint.cs`
 1. Start the application in the debugger.
 1. Wait for the backend to load... ☕️
     ![compute.geometry.exe](images/compute_geometry_screenshot.png)
