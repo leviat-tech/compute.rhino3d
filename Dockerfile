@@ -20,14 +20,11 @@ ENV RH_BUILD_ENV=${RH_BUILD}
 ARG RH_RELEASE_DATE
 ENV RH_RELEASE_DATE_ENV=${RH_RELEASE_DATE}
 
-install rhino (with “-package -quiet” args)
+#install rhino (with “-package -quiet” args)
 RUN "`
-    $Form = @{'email'='studio@crh.io';'current_page'='download_new'};`
-    $result = Invoke-RestMethod -Uri https://www.rhino3d.com/download/rhino/wip -Method Post -Body $Form | Select-String -Pattern 'http.*dujour\/exe\/([0-9]*)\/rhino_en-us_(.*)\.exe';`
-    if (-not (Test-Path env:RH_RELEASE_DATE_ENV)) { $env:RH_RELEASE_DATE_ENV = $result.matches.groups[1].Value };`
-    if (-not (Test-Path env:RH_BUILD_ENV)) { $env:RH_BUILD_ENV = $result.matches.groups[2].Value };`
+    $Url = 'https://www.rhino3d.com/download/rhino-for-windows/7/wip/direct?email=studio@crh.io';`
+    if ((Test-Path env:RH_RELEASE_DATE_ENV) -and (Test-Path env:RH_BUILD_ENV)) { $Url = 'http://files.mcneel.com/dujour/exe/'+ $env:RH_RELEASE_DATE_ENV+ '/rhino_en-us_' + $env:RH_BUILD_ENV +'.exe' };`
     $ProgressPreference = 'SilentlyContinue';`
-    $Url = 'http://files.mcneel.com/dujour/exe/'+ $env:RH_RELEASE_DATE_ENV+ '/rhino_en-us_' + $env:RH_BUILD_ENV +'.exe';`
     Invoke-WebRequest $Url -OutFile rhino_installer.exe`
     "
 
