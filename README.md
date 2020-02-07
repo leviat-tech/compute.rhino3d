@@ -17,3 +17,33 @@ Compute is built on top of Rhino 7 for Windows and can run anywhere Rhino 7 for 
 Start with the [installation guide](docs/installation.md) to setup your own Compute server, or [compile Compute](docs/installation.md#building-from-source-and-debugging) and start developing your own features.
 
 For more information, see https://www.rhino3d.com/compute
+
+# Docker Setup
+
+# Preparation
+Need a Windows Pro / Server machine with Docker for Windows Desktop installed.
+Acquire the license files:  
+https://discourse.mcneel.com/t/docker-support/89322
+
+Rhino Download (always get the latest version of Rhino WIP):  
+https://files.mcneel.com/dujour/exe/20190917/rhino_en-us_7.0.19260.11525.exe
+
+# Building the Image
+`docker build --isolation=process . -t rhino-compute`
+
+Following Build arguments are available:
+
+| Build Argument  | Default |
+| ------------- | ------------- |
+| WIN_BUILD  | 1903  |
+| RH_RELEASE_DATE  | Latest  |
+| RH_BUILD  | Latest  |
+
+# Running Image
+Mount the license files and run the image:
+
+`docker run --mount source=license,target="C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses" --mount source=cloudzoo,target="C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses" --mount source=settings,target="C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings" -p 8000:80 rhino-compute:latest
+`
+
+# Debugging Image
+`docker run -it rhino-compute:latest powershell`

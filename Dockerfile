@@ -1,44 +1,40 @@
 # escape=`
 
-# base image should match the host operating system
-# rhino only works with process isolation
-FROM mcr.microsoft.com/windows:1809
+# NOTE: use 'process' isolation to build image (otherwise rhino fails to install)
 
-# install dotnet
-RUN powershell -NoProfile -ExecutionPolicy unrestricted -Command " `
-    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12; `
-    &([scriptblock]::Create((Invoke-WebRequest -useb 'https://dot.net/v1/dotnet-install.ps1'))) -version 2.2.203"
+ARG WIN_BUILD=1903
 
-ENV DOTNET_RUNNING_IN_CONTAINER=true `
-    NUGET_XMLDOC_MODE=skip `
-    DOTNET_SKIP_FIRST_TIME_EXPERIENCE=true
+### builder image
+FROM mcr.microsoft.com/dotnet/framework/sdk:4.8 as builder
 
-# install .NET 4.6.2 framework via chocolatey
-RUN powershell -Command Set-ExecutionPolicy Bypass -Scope Process -Force; `
-        iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
-RUN powershell -Command "choco install -y netfx-4.6.2-devpack nuget.commandline"
-RUN setx path "%path%;C:\Users\ContainerAdministrator\AppData\Local\Microsoft\dotnet"
+# copy everything, restore packages and build app
+COPY src/ ./src/
+RUN msbuild ./src/compute.sln /t:build /restore /p:Configuration=Release
 
-# install rhino (with “-package -quiet” args)
-# NOTE: edit this if you use a different version of rhino!
-ADD https://files.mcneel.com/dujour/exe/20190917/rhino_en-us_7.0.19260.11525.exe rhino_installer.exe
-RUN powershell -Command " `
-    Start-Process .\rhino_installer.exe -ArgumentList '-package', '-quiet' -NoNewWindow -Wait; `
-    Remove-Item .\rhino_installer.exe"
+### main image
+FROM mcr.microsoft.com/windows:$WIN_BUILD
+SHELL ["powershell", "-Command"]
 
-# setup cloudzoo auth
-# NOTE: switch on CloudZooPlainText and copy 55500d41-3a41-4474-99b3-684032a4f4df.lic,
-#       cloudzoo.json and settings-Scheme__Default.xml to the working dir
-COPY ["55500d41-3a41-4474-99b3-684032a4f4df.lic", "C:/ProgramData/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["cloudzoo.json", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/6.0/License Manager/Licenses/"]
-COPY ["settings-Scheme__Default.xml", "C:/Users/ContainerAdministrator/AppData/Roaming/McNeel/Rhinoceros/7.0/settings/"]
+ARG RH_BUILD
+ENV RH_BUILD_ENV=${RH_BUILD}
+ARG RH_RELEASE_DATE
+ENV RH_RELEASE_DATE_ENV=${RH_RELEASE_DATE}
 
-# compile compute
-COPY src src
-RUN powershell -Command " `
-    nuget restore .\src; `
-    dotnet msbuild /p:Configuration=Release .\src"
+#install rhino (with “-package -quiet” args)
+RUN "`
+    $Url = 'https://www.rhino3d.com/download/rhino-for-windows/7/wip/direct?email=studio@crh.io';`
+    if ((Test-Path env:RH_RELEASE_DATE_ENV) -and (Test-Path env:RH_BUILD_ENV)) { $Url = 'http://files.mcneel.com/dujour/exe/'+ $env:RH_RELEASE_DATE_ENV+ '/rhino_en-us_' + $env:RH_BUILD_ENV +'.exe' };`
+    $ProgressPreference = 'SilentlyContinue';`
+    Invoke-WebRequest $Url -OutFile rhino_installer.exe`
+    "
+
+RUN Start-Process .\rhino_installer.exe -ArgumentList '-package', '-quiet' -NoNewWindow -Wait
+RUN Remove-Item .\rhino_installer.exe
+
+COPY --from=builder ["/src/bin/Release", "/app"]
+
+WORKDIR /app
 
 EXPOSE 80
 
-CMD .\src\bin\Release\compute.frontend.exe
+CMD ["compute.frontend.exe"]
