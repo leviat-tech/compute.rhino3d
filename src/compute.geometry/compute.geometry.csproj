@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="DataCache.cs" />
     <Compile Include="Environment.cs" />
+    <Compile Include="FileEndpoints.cs" />
     <Compile Include="FixedEndpoints.cs" />
     <Compile Include="GeometryEndPoint.cs" />
     <Compile Include="IO\GhPath.cs" />
