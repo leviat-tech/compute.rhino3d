@@ -20,6 +20,7 @@ namespace compute.geometry
                 if(_allEndPoints==null)
                 {
                     _allEndPoints = new List<GeometryEndPoint>();
+
                     foreach (string nameSpace in new string[] { "Rhino.Geometry", "Rhino.Geometry.Intersect" })
                     {
                         foreach (var endpoint in CreateEndpoints(typeof(Rhino.RhinoApp).Assembly, nameSpace))
