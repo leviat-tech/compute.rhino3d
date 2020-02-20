@@ -1,0 +1,5 @@
+web_addr: 0.0.0.0:4040
+tunnels:
+  checker:
+    proto: http
+    addr: 80

@@ -5,7 +5,8 @@ using Nancy.Extensions;
 using Newtonsoft.Json.Linq;
 using Amazon.S3;
 using Serilog;
-
+using System.Linq;
+using System.IO;
 
 namespace compute.frontend
 {
@@ -101,6 +102,21 @@ namespace compute.frontend
 
             string requestId = context.Items["RequestId"] as string;
             string filename = System.IO.Path.Combine(stashDir, $"{requestId}.request.log");
+
+            //Saving attachments from incoming request (for fileIO endpoints)
+            var attachments = context.Request.Files;
+            string attachmentDir = Path.Combine(stashDir, requestId);
+            if (!System.IO.Directory.Exists(attachmentDir))
+                System.IO.Directory.CreateDirectory(attachmentDir);
+            foreach (var attachment in attachments)
+            {
+                string attachmentpath = Path.Combine(attachmentDir, attachment.Name);
+                using (FileStream output = new FileStream(attachmentpath, FileMode.Create))
+                {
+                    attachment.Value.CopyTo(output);
+                    Console.WriteLine("saved attachment here: " + attachmentpath);
+                }
+            }
 
             System.IO.File.WriteAllText(filename, GetRequestJson(context));
             Log.Information("Stashed request to {RequestId}", requestId);
