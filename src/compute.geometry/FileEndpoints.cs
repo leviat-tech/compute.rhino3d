@@ -14,10 +14,10 @@ namespace compute.geometry
     {
         public FileEndPointsModule(Nancy.Routing.IRouteCacheProvider routeCacheProvider)
         {
-            Post["export/{extension}"] = _ => Export(Context, _["extension"]);
+            Post["convert/{extension}"] = _ => Convert(Context, _["extension"]);
         }
 
-        static Response Export(NancyContext ctx, string extension)
+        static Response Convert(NancyContext ctx, string extension)
         {
             string requestId = ctx.Request.Headers["X-Compute-Id"].FirstOrDefault() as string;
             var stashDir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "Compute", "Requests");
@@ -29,14 +29,20 @@ namespace compute.geometry
             if (firstAttachment == null)
                 throw new Exception("No attachment found.");
 
+            var doc = ImportAny(firstAttachment.FullName);
+
             string outputPath;
             switch (extension.ToLower())
             {
+                case "3dm":
+                    outputPath = doc.Path;
+                    doc.Dispose();
+                    break;
                 case "stp":
-                    outputPath = ExportStep(firstAttachment.FullName, "stp");
+                    outputPath = ExportStep(doc, "stp");
                     break;
                 default:
-                    outputPath = ExportAny(firstAttachment.FullName, extension.ToLower());
+                    outputPath = ExportAny(doc, extension.ToLower());
                     break;
             }
             var outputFile = new FileStream(outputPath, FileMode.Open);
@@ -46,13 +52,28 @@ namespace compute.geometry
             return response.AsAttachment(outputName);
         }
 
-        static string ExportStep(string source, string extension)
+        static Rhino.RhinoDoc ImportAny(string source)
         {
-            var doc = Rhino.RhinoDoc.New("");
-            doc.Import(source);
-            bool saved = doc.SaveAs(Path.ChangeExtension(source, "3dm"));
-            doc.Dispose();
-            doc = Rhino.RhinoDoc.Load(Path.ChangeExtension(source, "3dm"));
+            string sourceExtension = Path.GetExtension(source);
+            Rhino.RhinoDoc doc;
+            switch (sourceExtension.ToLower())
+            {
+                case "3dm":
+                    doc = Rhino.RhinoDoc.Load(source);
+                    break;
+                default:
+                    doc = Rhino.RhinoDoc.New("");
+                    doc.Import(source);
+                    doc.SaveAs(Path.ChangeExtension(source, "3dm"));
+                    doc.Dispose();
+                    doc = Rhino.RhinoDoc.Load(Path.ChangeExtension(source, "3dm"));
+                    break;
+            }
+            return doc;
+        }
+
+        static string ExportStep(Rhino.RhinoDoc doc, string extension)
+        {
             string docPath = doc.Path;
             string exportPath = Path.ChangeExtension(docPath, "stp");
             var exported = Rhino.FileIO.FileStp.Write(exportPath, doc, new Rhino.FileIO.FileStpWriteOptions());
@@ -64,11 +85,10 @@ namespace compute.geometry
         }
 
         //Many formats have issues, also binary response seems to get corrupted
-        static string ExportAny(string source, string extension)
+        static string ExportAny(Rhino.RhinoDoc doc, string extension)
         {
-            var doc = Rhino.RhinoDoc.New("");
-            doc.Import(source);
-            string exportPath = Path.ChangeExtension(source, extension);
+            string docPath = doc.Path;
+            string exportPath = Path.ChangeExtension(docPath, extension);
             bool exported = doc.Export(exportPath);
             doc.Dispose();
             if (exported)
