@@ -45,12 +45,13 @@ namespace compute.geometry
                     outputPath = ExportAny(doc, extension.ToLower());
                     break;
             }
-            var outputFile = new FileStream(outputPath, FileMode.Open);
-            var outputName = Path.ChangeExtension(Path.GetFileName(outputPath), "stp");
 
-            var response = new StreamResponse(() => outputFile, MimeTypes.GetMimeType(outputName));
-            return response.AsAttachment(outputName);
+            var outputFile = new FileStream(outputPath, FileMode.Open);
+            var response = new StreamResponse(() => outputFile, MimeTypes.GetMimeType(Path.GetFileName(outputPath)));
+            return response.AsAttachment(Path.GetFileName(outputPath));
         }
+
+
 
         static Rhino.RhinoDoc ImportAny(string source)
         {
