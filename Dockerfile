@@ -34,15 +34,15 @@ RUN Remove-Item .\rhino_installer.exe
 COPY --from=builder ["/src/bin/Release", "/app"]
 
 #install ngrok for testing
-RUN "`
-    $Url = 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-386.zip';`
-    $ProgressPreference = 'SilentlyContinue';`
-    Invoke-WebRequest $Url -OutFile ngrok.zip`
-    "
-RUN Expand-Archive -Path 'ngrok.zip'
-COPY ./ngrok-config.yml \ngrok
-WORKDIR \ngrok
-EXPOSE 4040
+# RUN "`
+#     $Url = 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-windows-386.zip';`
+#     $ProgressPreference = 'SilentlyContinue';`
+#     Invoke-WebRequest $Url -OutFile ngrok.zip`
+#     "
+# RUN Expand-Archive -Path 'ngrok.zip'
+# COPY ./ngrok-config.yml \ngrok
+# WORKDIR \ngrok
+# EXPOSE 4040
 #CMD [".\ngrok.exe start -config .\ngrok-config.yml checker"]
 # RUN .\ngrok.exe start -config .\ngrok-config.yml checker
 
