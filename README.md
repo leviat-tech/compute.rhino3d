@@ -10,7 +10,7 @@
 
 This project is composed of two applications:
 - `compute.geometry` provides the geometry REST API
-- `/export/{extension}` perfoms fileIO operation on supported file formats
+- `/convert/{outputExtension}` perfoms fileIO operation on supported file formats
 - `compute.frontend` provides authentication, request stashing (saving POST data for diagnostics), logging, and configuration of request and response headers. `compute.frontend` creates the `compute.geometry` process, monitors its health, and restarts `compute.geometry` as necessary.
 
 Compute is built on top of Rhino 7 for Windows and can run anywhere Rhino 7 for Windows can run. The two typical scenarios are running as a web server on a remote Window Server operating system and running locally on a user's computer for debugging or providing local services to applications.
